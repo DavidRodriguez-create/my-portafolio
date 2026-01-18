@@ -12,7 +12,9 @@ import { API_ENDPOINTS } from '../config/constants.js';
  */
 export async function fetchProjects() {
   try {
-    const response = await fetch(API_ENDPOINTS.projects);
+    const url = API_ENDPOINTS.projects;
+    console.log('Fetching projects from:', url);
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

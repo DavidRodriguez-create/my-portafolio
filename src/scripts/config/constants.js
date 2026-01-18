@@ -99,8 +99,21 @@ export const GISCUS_DEFAULTS = {
   loading: 'lazy'
 };
 
+// Base path for GitHub Pages deployment
+// Use '' for root domain or '/my-portafolio' for GitHub Pages subpath
+const getBasePath = () => {
+  if (typeof window === 'undefined') return '';
+  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? '' 
+    : '/my-portafolio';
+};
+
+export const BASE_PATH = getBasePath();
+
 export const API_ENDPOINTS = {
-  projects: '/projects.json'
+  get projects() {
+    return `${getBasePath()}/projects.json`;
+  }
 };
 
 export const DOM_SELECTORS = {

@@ -16,7 +16,8 @@ const CONFIG = {
   templatesDir: 'src/templates',
   dataDir: 'src/data',
   stylesDir: 'src/styles',
-  scriptsDir: 'src/scripts'
+  scriptsDir: 'src/scripts',
+  basePath: process.env.BASE_PATH || '' // Set via environment variable for GitHub Pages
 };
 
 // Utilities
@@ -118,17 +119,32 @@ function copyStaticAssets() {
 }
 
 /**
+ * Inject base path into HTML content
+ */
+function injectBasePath(html) {
+  if (!CONFIG.basePath) return html;
+  
+  return html
+    .replace(/href="\//g, `href="${CONFIG.basePath}/`)
+    .replace(/src="\//g, `src="${CONFIG.basePath}/`)
+    .replace(/href="css\//g, `href="${CONFIG.basePath}/css/`)
+    .replace(/src="js\//g, `src="${CONFIG.basePath}/js/`);
+}
+
+/**
  * Build HTML pages
  */
 function buildPages() {
   log.info('Building HTML pages...');
   
-  // Copy index.html
+  // Copy and process index.html
   const indexSource = path.join(CONFIG.templatesDir, 'index.html');
   const indexDest = path.join(CONFIG.distDir, 'index.html');
   
   if (fs.existsSync(indexSource)) {
-    fs.copyFileSync(indexSource, indexDest);
+    let indexHtml = fs.readFileSync(indexSource, 'utf-8');
+    indexHtml = injectBasePath(indexHtml);
+    fs.writeFileSync(indexDest, indexHtml);
     log.success('Index page built');
   }
   
@@ -137,10 +153,13 @@ function buildPages() {
     fs.readFileSync(path.join(CONFIG.dataDir, 'projects.json'), 'utf-8')
   );
   
-  const projectTemplate = fs.readFileSync(
+  let projectTemplate = fs.readFileSync(
     path.join(CONFIG.templatesDir, 'project.html'),
     'utf-8'
   );
+  
+  // Inject base path into project template
+  projectTemplate = injectBasePath(projectTemplate);
   
   // Create catch-all /projects/index.html for non-existent projects
   const projectsDir = path.join(CONFIG.distDir, 'projects');
