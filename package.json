@@ -1,0 +1,29 @@
+{
+  "name": "my-portfolio",
+  "version": "1.0.0",
+  "description": "Modern static portfolio site with JSON-driven content",
+  "main": "scripts/build.js",
+  "scripts": {
+    "dev": "npm run build && npm run serve",
+    "dev:watch": "node scripts/dev.js",
+    "build": "node scripts/build.js",
+    "serve": "npx serve dist -p 3000",
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
+    "start": "npm run build && npm run serve",
+    "check:locks": "node scripts/check-locks.js"
+  },
+  "keywords": [
+    "portfolio",
+    "static-site",
+    "frontend",
+    "javascript"
+  ],
+  "author": "David Rodríguez Hernández",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "live-server": "^1.2.2"
+  }
+}

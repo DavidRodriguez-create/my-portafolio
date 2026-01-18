@@ -1,0 +1,80 @@
+{
+  "projects": [
+    {
+      "id": "impostor",
+      "title": "Impostor (PWA Mini Game)",
+      "icon": "🎮",
+      "year": 2026,
+      "type": "game",
+      "description": "A lightweight, mobile-first Progressive Web App party game. Features offline support, minimal bundle size, and smooth performance on all devices. Built with modern web technologies for an engaging multiplayer experience.",
+      "tech": ["JavaScript", "Vite", "PWA"],
+      "url": "projects/impostor/",
+      "featured": true,
+      "details": {
+        "summary": "Lightweight mobile-first PWA party game.",
+        "content": "A web-first PWA intended to run smoothly on mobile browsers. Offline support and minimal bundle size.",
+        "links": {
+          "github": "https://github.com/DavidRodriguez-create/Impostor",
+          "demo": "https://davidrodriguez-create.github.io/Impostor/",
+          "discussions": "https://github.com/DavidRodriguez-create/Impostor/discussions"
+        },
+        "images": [
+          "../../assets/impostor/impostor.png"
+        ],
+        "diagram": {
+          "type": "mermaid",
+          "code": "flowchart LR; User-->Game; Game-->State; State-->UI;"
+        },
+        "giscus": {
+          "repo": "DavidRodriguez-create/Impostor",
+          "repoId": "R_kgDOQ0YavA",          
+          "category": "Q&A",          
+          "categoryId": "DIC_kwDOQ0YavM4C02z2",
+          "mapping": "og:title",
+          "strict": "0",
+          "reactionsEnabled": "0",
+          "emitMetadata": "0",
+          "inputPosition": "top",
+          "theme": "preferred_color_scheme",
+          "lang": "en",
+          "loading": "lazy"
+        }
+      }
+    },
+    {
+      "id": "payments-pipeline",
+      "title": "Payments Data Pipeline",
+      "icon": "📊",
+      "year": 2025,
+      "type": "data",
+      "description": "Event-driven data ingestion system using Kafka, Spark, and Delta Lake on Databricks. Implements retry logic, dead letter queues (DLQ), and real-time processing. Powers BI-ready data marts for analytics and reporting.",
+      "tech": ["Scala", "Apache Sparks", "Databricks", "Delta Lake", "Apache Kafka"],
+      "url": "projects/payments-pipeline/",
+      "featured": true,
+      "details": {
+        "summary": "Kafka → Spark → Delta Lake with Databricks.",
+        "content": "Event-driven ingestion with retries and DLQ. Delta Lake tables power BI-ready data marts.",
+        "links": {
+          "github": "https://github.com/youruser/payments-pipeline",
+          "discussions": "https://github.com/DavidRodriguez-create/my-portafolio/discussions"
+        },
+        "images": [
+          "../../assets/payments/arch.png"
+        ],
+        "diagram": {
+          "type": "mermaid",
+          "code": "sequenceDiagram; participant P as Producer; participant K as Kafka; participant S as Spark; P->>K: publish; K->>S: consume; S-->>S: transform; S->>DL: write Delta;"
+        }
+      }
+    }
+  ],
+  "config": {
+    "siteName": "David Rodríguez Hernández",
+    "tagline": "Full Stack Developer & Data Engineer",
+    "social": {
+      "github": "https://github.com/DavidRodriguez-create",
+      "linkedin": "https://www.linkedin.com/in/davidrodriguezhernandez-software/",
+      "email": "david.rodriguez.form@gmail.com"
+    }
+  }
+}

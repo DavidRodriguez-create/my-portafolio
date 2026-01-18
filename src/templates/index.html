@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>David Rodríguez Hernández — Projects</title>
+  <meta name="description" content="Filterable portfolio with per-project pages." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-top">
+      <div class="header-content">
+        <div>
+          <h1>
+            <span class="header-icon">👨‍💻</span>
+            David Rodríguez Hernández
+          </h1>
+          <p class="header-subtitle">Full Stack Developer & Data Engineer</p>
+        </div>
+        <div class="header-links">
+          <a href="https://github.com/DavidRodriguez-create" target="_blank" rel="noopener" class="header-link">
+            <span class="icon">🔗</span> GitHub
+          </a>
+          <a href="https://linkedin.com/in/yourprofile" target="_blank" rel="noopener" class="header-link">
+            <span class="icon">💼</span> LinkedIn
+          </a>
+          <a href="mailto:your.email@example.com" class="header-link">
+            <span class="icon">📧</span> Contact
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="filters-section">
+      <div class="filters-wrapper">
+        <h2 class="filters-title">
+          🔍 Filter Projects <span class="filters-count" id="projectCount"></span>
+        </h2>
+        <div class="filters">
+          <div class="custom-select-wrapper">
+            <label class="filter-label">Year:</label>
+            <select id="yearFilter"><option value="">All</option></select>
+          </div>
+          <div class="custom-select-wrapper">
+            <label class="filter-label">Technologies:</label>
+            <select id="techFilter"><option value="">All</option></select>
+          </div>
+          <div class="custom-select-wrapper">
+            <label class="filter-label">Type:</label>
+            <select id="typeFilter"><option value="">All</option></select>
+          </div>
+          <input id="searchInput" type="search" placeholder="Search projects…" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section id="listView" class="cards" aria-label="Project list">
+      <!-- Projects loaded dynamically from projects.json via site-refactored.js -->
+      <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+        <p>Loading projects...</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="yearNow"></span> David Rodríguez Hernández</small>
+  </footer>
+
+  <script type="module" src="js/site.js"></script>
+</body>
+</html>

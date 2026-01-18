@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta property="og:title" content="Project — Portfolio" />
+  <title>Project — Portfolio</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/matrix-effect.css" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'dark' });</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-top">
+      <div class="header-content" style="justify-content: space-between;">
+        <a href="/" class="back-link">
+          <span class="back-icon">←</span> Back to Projects
+        </a>
+        <div class="project-meta-header" id="projectMetaHeader"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section id="projectDetail" class="detail" aria-label="Project detail">
+      <!-- Project loaded dynamically from URL via project-detail-refactored.js -->
+      <div class="loading-state">
+        <div class="loading-icon">⏳</div>
+        <p>Loading project...</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="yearNow"></span> David Rodríguez Hernández</small>
+  </footer>
+
+  <script type="module" src="/js/error-page.js"></script>
+  <script type="module" src="/js/project-detail.js"></script>
+</body>
+</html>
