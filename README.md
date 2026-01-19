@@ -1,195 +1,136 @@
 # Portfolio - David Rodríguez Hernández
 
-A modern, static portfolio site with clean architecture, filterable projects, Mermaid diagrams, and Giscus comments.
+[![Portfolio](https://img.shields.io/badge/🔗_Live_Site-Visit_Now-blue?style=for-the-badge)](https://davidrodriguez-create.github.io/my-portafolio/)
 
-Built with vanilla JavaScript using ES6 modules, following clean code principles and separation of concerns.
 
-## ✨ Features
 
-- 🎨 Modern, responsive design
-- 🔍 Advanced filtering (year, technology, type, search)
-- 📊 Interactive Mermaid diagrams
-- 💬 Giscus comment system
-- 🎭 Matrix-style 404 error page
-- 🏗️ Clean, modular architecture
-- ⚡ Static site generation
-- 📱 Mobile-friendly
+## 🎯 Project Aim
 
-## 🏗️ Project Structure
+A collection of my personal side projects showcasing backend engineering, data pipelines, and web development experiments. This portfolio highlights my skills across Java/Quarkus, Python, Spark/Databricks, and modern web tooling.
 
-```
-my-portfolio/
-├── src/
-│   ├── scripts/
-│   │   ├── config/
-│   │   │   └── constants.js          # Configuration
-│   │   ├── services/
-│   │   │   └── api.js                # Data fetching
-│   │   ├── utils/
-│   │   │   ├── badges.js             # Badge utilities
-│   │   │   └── dom.js                # DOM utilities
-│   │   ├── templates/
-│   │   │   └── html-generators.js    # HTML templates
-│   │   ├── modules/
-│   │   │   └── filters.js            # Filter logic
-│   │   ├── site.js                   # Home page
-│   │   ├── project-detail.js         # Project pages
-│   │   └── error-page.js             # 404 page
-│   ├── templates/
-│   │   ├── index.html                # Home template
-│   │   └── project.html              # Project template
-│   ├── styles/
-│   │   ├── styles.css                # Main styles
-│   │   └── matrix-effect.css         # Matrix animation
-│   └── data/
-│       └── projects.json             # Projects data
-├── public/
-│   └── assets/                       # Static assets
-├── scripts/
-│   └── build.js                      # Build script
-└── dist/                             # Build output
-```
+**Key Features:**
+- JSON-driven content - update projects without touching HTML
+- Giscus comment system for project discussions
+- Static site generation for fast loading and easy deployment
 
-## 🚀 Getting Started
+## 🏗️ How to Build Locally
 
 ### Prerequisites
 - Node.js >= 14.0.0
 
-### Installation
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd my-portfolio
+### Build Steps
 
-# Install dependencies (optional, for live-server)
-npm install
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/DavidRodriguez-create/my-portafolio.git
+   cd my-portafolio
+   ```
 
-### Development
-```bash
-# Build and serve the site
-npm run dev
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-# Build with file watching (auto-rebuild on changes)
-npm run dev:watch
+3. **Build and run the site**
+   ```bash
+   npm run dev
+   ```
+   This will build the site and serve it at `http://localhost:3000`
 
-# Open in browser
-# Visit: http://localhost:3000
-```
+4. **Development with auto-rebuild** (optional)
+   ```bash
+   npm run dev:watch
+   ```
+   Automatically rebuilds when you change source files.
 
 ### Production Build
 ```bash
-# Build for production
 npm run build
-
-# The built site will be in the dist/ directory
 ```
+The built site will be in the `dist/` directory, ready to deploy.
 
-## 📝 Adding Projects
+## ➕ How to Add New Projects
 
-Edit `src/data/projects.json` to add new projects:
+All projects are defined in a single JSON file. To add a new project:
 
-```json
-{
-  "config": {
-    "siteName": "Your Name",
-    "tagline": "Your Tagline"
-  },
-  "projects": [
-    {
-      "id": "project-slug",
-      "title": "Project Title",
-      "icon": "🎮",
-      "year": 2026,
-      "type": "game",
-      "description": "Short description",
-      "tech": ["JavaScript", "React"],
-      "url": "projects/project-slug/",
-      "featured": true,
-      "details": {
-        "summary": "Detailed summary",
-        "content": "Full description",
-        "links": {
-          "github": "https://github.com/...",
-          "demo": "https://...",
-          "discussions": "https://..."
-        },
-        "images": ["../../assets/project/image.png"],
-        "diagram": {
-          "type": "mermaid",
-          "code": "flowchart LR; A-->B;"
-        }
-      }
-    }
-  ]
-}
-```
+1. **Open** `src/data/projects.json`
 
-## 🎨 Customization
+2. **Add your project** to the `projects` array:
 
-### Styles
-Edit `src/styles/styles.css` to customize the look and feel.
+   ```json
+   {
+     "id": "my-awesome-project",
+     "title": "My Awesome Project",
+     "icon": "🚀",
+     "year": 2026,
+     "type": "web",
+     "description": "A brief description of your project",
+     "tech": ["JavaScript", "React", "Node.js"],
+     "url": "https://github.com/yourusername/project",
+     "featured": true,
+     "details": {
+       "summary": "Short summary for the detail page",
+       "content": "Longer description with more details",
+       "links": {
+         "github": "https://github.com/yourusername/project",
+         "demo": "https://yourproject.com",
+         "discussions": "https://github.com/yourusername/project/discussions"
+       },
+       "images": [
+         "assets/project/screenshot.png"
+       ],
+       "diagram": {
+         "type": "mermaid",
+         "code": "flowchart LR; A[User] --> B[App]; B --> C[API];"
+       },
+       "giscus": {
+         "repo": "yourusername/project",
+         "repoId": "YOUR_REPO_ID",
+         "category": "Q&A",
+         "categoryId": "YOUR_CATEGORY_ID",
+         "mapping": "og:title",
+         "strict": "0",
+         "reactionsEnabled": "1",
+         "emitMetadata": "0",
+         "inputPosition": "top",
+         "theme": "preferred_color_scheme",
+         "lang": "en",
+         "loading": "lazy"
+       }
+     }
+   }
+   ```
 
-### Templates
-- `src/templates/index.html` - Home page layout
-- `src/templates/project.html` - Individual project page layout
+3. **Field explanations:**
+   - `id` - Unique identifier (used in URLs)
+   - `title` - Project name displayed on the site
+   - `icon` - Emoji icon for the project card
+   - `year` - Project year (for filtering)
+   - `type` - Category: `"web"`, `"game"`, `"data"`, `"tool"`, etc.
+   - `description` - Short description shown on cards
+   - `tech` - Array of technologies (creates badges automatically)
+   - `url` - Link to project (GitHub, demo, etc.)
+   - `featured` - Set to `true` to highlight the project
+   - `details` - (Optional) Extended info for detail page:
+     - `summary` - Brief summary
+     - `content` - Full description
+     - `links` - GitHub, demo, discussions URLs
+     - `images` - Screenshots (place in `public/assets/`)
+     - `diagram` - Mermaid diagram code
+     - `giscus` - Comment system config (get from [giscus.app](https://giscus.app))
 
-### Scripts
-- `src/scripts/site.js` - Home page functionality
-- `src/scripts/project-detail.js` - Project page functionality
+4. **Add images** (if any) to `public/assets/your-project/`
 
-## 🌐 Deployment
+5. **Rebuild** the site:
+   ```bash
+   npm run build
+   ```
 
-### GitHub Pages
-1. Create a public repository
-2. Push your code to the `main` branch
-3. Build the site: `npm run build`
-4. Deploy the `dist` folder to GitHub Pages
-5. Configure in **Settings → Pages** → Deploy from branch → `main` → `/dist`
+Your new project will appear automatically on the homepage with filtering support!
 
-Alternatively, use GitHub Actions to automate:
-```yaml
-name: Deploy to GitHub Pages
-on:
-  push:
-    branches: [main]
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: npm run build
-      - uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-```
+---
 
-### Other Platforms
-- **Netlify**: Connect your repo and set build command to `npm run build` and publish directory to `dist`
-- **Vercel**: Same as Netlify
-- **Any static host**: Upload the contents of the `dist` folder
-
-## 💬 Comments (Giscus)
-
-To enable comments on project pages:
-1. Go to https://giscus.app
-2. Configure your discussion repository
-3. Update the Giscus configuration in `src/data/projects.json` for each project
-
-## 🔧 Scripts Reference
-
-- `npm run dev` - Build and start local server
-- `npm run dev:watch` - Start development mode with file watching
-- `npm run build` - Build for production
-- `npm run serve` - Serve the dist folder
-- `npm run clean` - Remove dist directory
-- `npm start` - Build and serve (alias for production preview)
-
-## 📄 License
+## � License
 
 MIT License - see [LICENSE](LICENSE) file for details
 
@@ -197,3 +138,5 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 **David Rodríguez Hernández**
 - GitHub: [@DavidRodriguez-create](https://github.com/DavidRodriguez-create)
+- Portfolio: [https://davidrodriguez-create.github.io/my-portafolio/](https://davidrodriguez-create.github.io/my-portafolio/)
+
