@@ -84,12 +84,29 @@ function generateGallery(images, projectTitle) {
   return `
     <div class="project-gallery">
       <h3 class="section-label">Gallery</h3>
-      <div class="gallery-grid">
-        ${images.map(img => `
-          <div class="gallery-item">
-            <img src="${img}" alt="${projectTitle}" loading="lazy" />
+      <div class="gallery-slider">
+        <div class="slider-wrapper">
+          <div class="slider-track">
+            ${images.map((img, index) => `
+              <div class="slider-item">
+                <img src="${img}" alt="${projectTitle} - Image ${index + 1}" loading="lazy" />
+              </div>
+            `).join('')}
           </div>
-        `).join('')}
+        </div>
+        ${images.length > 1 ? `
+          <button class="slider-btn prev" aria-label="Previous image">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button class="slider-btn next" aria-label="Next image">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+          <div class="slider-dots"></div>
+        ` : ''}
       </div>
     </div>
   `;
@@ -163,7 +180,7 @@ export function generateProjectDetail(project) {
 
     <div class="project-content">
       <h3 class="section-label">About</h3>
-      <p>${project.details.content}</p>
+      <div class="project-about">${Array.isArray(project.details.content) ? project.details.content.join('') : project.details.content}</div>
     </div>
 
     ${generateGallery(project.details.images, project.title)}

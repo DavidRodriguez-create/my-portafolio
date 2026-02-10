@@ -2,28 +2,47 @@
   "projects": [
     {
       "id": "impostor",
-      "title": "Impostor (PWA Mini Game)",
-      "icon": "🎮",
+      "title": "🎭 Impostor Game",
+      "icon": "🎭",
       "year": 2026,
       "type": "game",
-      "description": "A lightweight, mobile-first Progressive Web App party game. Features offline support, minimal bundle size, and smooth performance on all devices. Built with modern web technologies for an engaging multiplayer experience.",
-      "tech": ["JavaScript", "Vite", "PWA"],
+      "description": "Instant-play party game. No downloads needed! Open the browser and start playing with friends. Available in multiple languages (ES/EN/FR/ZH) with automatic word translation. Simple social deduction mechanics with voting system and swipe-to-reveal roles. Works offline as PWA.",
+      "tech": ["Vanilla JavaScript", "Vite", "PWA", "i18n"],
       "url": "projects/impostor/",
       "featured": true,
       "details": {
-        "summary": "Lightweight mobile-first PWA party game.",
-        "content": "A web-first PWA intended to run smoothly on mobile browsers. Offline support and minimal bundle size.",
+        "summary": "No-download party game. Browser-based, multiple languages, instant play.",
+        "content": [
+          "<p>Ever tried getting everyone to download the same game app at a party? <strong>Forget that.</strong> 🎉</p>",
+          "<p>This is a party game that lives in your browser. <em>Share the link and you're ready in 5 seconds</em>. No app stores, no 'sorry I don't have space,' no waiting.</p>",
+          "<p><strong>Why it works for everyone:</strong></p>",
+          "<ul>",
+          "<li><strong>Zero friction:</strong> Just open a link, no downloads</li>",
+          "<li><strong>Truly global:</strong> Spanish, English, French, Chinese... with live word translation</li>",
+          "<li><strong>Quick setup:</strong> Configure players, time, and rules in seconds</li>",
+          "<li><strong>Works everywhere:</strong> Any mobile browser, install as PWA or stay lightweight</li>",
+          "</ul>",
+          "<p><strong>The gameplay?</strong> Classic social deduction: everyone except the impostors gets the same secret word (like 'Beach' or 'Pizza'). Through careful questioning and voting, figure out who's faking it. Swipe to reveal roles, vote for suspects, and watch the chaos unfold.</p>",
+          "<p><em>It's your party, your rules.</em></p>"
+        ],
         "links": {
           "github": "https://github.com/DavidRodriguez-create/Impostor",
           "demo": "https://davidrodriguez-create.github.io/Impostor/",
           "discussions": "https://github.com/DavidRodriguez-create/Impostor/discussions"
         },
         "images": [
-          "../../assets/impostor/impostor.png"
+          "../../assets/impostor/IMG_20260210_223150.jpg",
+          "../../assets/impostor/IMG_20260210_223217.jpg",
+          "../../assets/impostor/IMG_20260210_223249.jpg",
+          "../../assets/impostor/IMG_20260210_223523.jpg",
+          "../../assets/impostor/IMG_20260210_223537.jpg",
+          "../../assets/impostor/IMG_20260210_223557.jpg",
+          "../../assets/impostor/IMG_20260210_223609.jpg",
+          "../../assets/impostor/IMG_20260210_223624.jpg"
         ],
         "diagram": {
           "type": "mermaid",
-          "code": "flowchart LR; User-->Game; Game-->State; State-->UI;"
+          "code": "flowchart TD\n    Start[Start Screen] --> Theme[Theme Selection]\n    Theme --> Setup[Player Setup]\n    Setup --> Reveal[Role Reveal]\n    Reveal --> Game[Game Screen]\n    Game --> Vote{Voting System}\n    Vote -->|Correct| Check{All Found?}\n    Vote -->|Wrong| Game\n    Check -->|No| Game\n    Check -->|Yes| End[Game Over]\n    Game -->|Manual Reveal| End\n    End --> Start"
         },
         "giscus": {
           "repo": "DavidRodriguez-create/Impostor",
@@ -42,28 +61,39 @@
       }
     },
     {
-      "id": "payments-pipeline",
-      "title": "Payments Data Pipeline",
-      "icon": "📊",
+      "id": "pay-and-go",
+      "title": "Pay & Go",
+      "icon": "💳",
       "year": 2025,
-      "type": "data",
-      "description": "Event-driven data ingestion system using Kafka, Spark, and Delta Lake on Databricks. Implements retry logic, dead letter queues (DLQ), and real-time processing. Powers BI-ready data marts for analytics and reporting.",
-      "tech": ["Scala", "Apache Sparks", "Databricks", "Delta Lake", "Apache Kafka"],
-      "url": "projects/payments-pipeline/",
+      "type": "backend",
+      "description": "Event-driven payment microservices platform built with Go. Learning project exploring Clean Architecture, Domain-Driven Design, and real-time event streaming with Kafka. Features account and card management services with asynchronous communication.",
+      "tech": ["Go", "Apache Kafka", "Clean Architecture", "Podman", "Kubernetes"],
+      "url": "projects/pay-and-go/",
       "featured": true,
       "details": {
-        "summary": "Kafka → Spark → Delta Lake with Databricks.",
-        "content": "Event-driven ingestion with retries and DLQ. Delta Lake tables power BI-ready data marts.",
+        "summary": "Microservices with Go, Kafka, and Clean Architecture principles.",
+        "content": [
+          "<p><strong>Learning Go by building something real.</strong></p>",
+          "<p>This was my deep dive into Go, microservices architecture, and event-driven systems. Two services (Account & Card) communicate asynchronously through Kafka, following Clean Architecture principles to the letter.</p>",
+          "<p><strong>What makes it interesting:</strong></p>",
+          "<ul>",
+          "<li><strong>True microservices:</strong> Separate services with clear boundaries, loosely coupled via Kafka events</li>",
+          "<li><strong>Clean Architecture:</strong> Domain entities know nothing about JSON or databases. Pure business logic all the way down</li>",
+          "<li><strong>Event-driven flow:</strong> Create an account → Kafka carries the event → Card service syncs automatically. No direct API calls</li>",
+          "<li><strong>Production-ready patterns:</strong> Health checks, containerization with Podman, Kubernetes manifests, one-command deployment</li>",
+          "<li><strong>Test coverage:</strong> 100% on domain & application layers. Integration tests for the full event flow</li>",
+          "</ul>",
+          "<p><strong>Interactive UI included:</strong> Open <code>ui.html</code> in a browser to create accounts, issue cards, and watch Kafka events flow in real-time.</p>",
+          "<p><em>Built as a proof of concept to learn Go and distributed systems patterns. Turns out, microservices are just as messy (and fun) as everyone says.</em></p>"
+        ],
         "links": {
-          "github": "https://github.com/youruser/payments-pipeline",
+          "github": "https://github.com/DavidRodriguez-create/pay-and-go",
           "discussions": "https://github.com/DavidRodriguez-create/my-portafolio/discussions"
         },
-        "images": [
-          "../../assets/payments/arch.png"
-        ],
+        "images": [],
         "diagram": {
           "type": "mermaid",
-          "code": "sequenceDiagram; participant P as Producer; participant K as Kafka; participant S as Spark; P->>K: publish; K->>S: consume; S-->>S: transform; S->>DL: write Delta;"
+          "code": "graph LR\n    UI[Web UI] -->|HTTP| AS[Account Service]\n    UI -->|HTTP| CS[Card Service]\n    AS -->|Publish Events| K[Kafka]\n    K -->|Consume Events| CS\n    AS --> AR[(In-Memory Repo)]\n    CS --> CR[(In-Memory Repo)]\n    \n    style K fill:#ff6b6b\n    style AS fill:#4ecdc4\n    style CS fill:#45b7d1"
         }
       }
     }
