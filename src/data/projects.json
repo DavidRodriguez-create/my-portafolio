@@ -94,6 +94,20 @@
         "diagram": {
           "type": "mermaid",
           "code": "graph LR\n    UI[Web UI] -->|HTTP| AS[Account Service]\n    UI -->|HTTP| CS[Card Service]\n    AS -->|Publish Events| K[Kafka]\n    K -->|Consume Events| CS\n    AS --> AR[(In-Memory Repo)]\n    CS --> CR[(In-Memory Repo)]\n    \n    style K fill:#ff6b6b\n    style AS fill:#4ecdc4\n    style CS fill:#45b7d1"
+        },
+        "giscus": {
+          "repo": "DavidRodriguez-create/pay-and-go",
+          "repoId": "R_kgDOQcREAA",          
+          "category": "Q&A",          
+          "categoryId": "DIC_kwDOQcREAM4C2LDc",
+          "mapping": "og:title",
+          "strict": "0",
+          "reactionsEnabled": "0",
+          "emitMetadata": "0",
+          "inputPosition": "top",
+          "theme": "preferred_color_scheme",
+          "lang": "en",
+          "loading": "lazy"
         }
       }
     }
