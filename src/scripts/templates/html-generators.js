@@ -3,127 +3,148 @@
  * Separation of concerns: Templates separate from logic
  */
 
-import { 
-  generateTechBadges, 
-  generateYearBadge, 
-  generateTypeBadge,
-  generateYearBadgeDetail,
-  generateTypeBadgeDetail
-} from '../utils/badges.js';
+import { BASE_PATH } from '../config/constants.js';
+
+const STATUS_COLOR = {
+  shipped: 'var(--success)',
+  building: 'var(--warning)',
+  archived: 'var(--text-faint)'
+};
+
+const ICONS = {
+  arrowLeft: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`,
+  arrowRight: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`,
+  chevronLeft: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>`,
+  chevronRight: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`,
+  close: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`
+};
 
 /**
  * Generate HTML for a project card
  * @param {Object} project - Project data object
+ * @param {number} index - Position of the project in the list (0-based)
  * @returns {string} HTML string
  */
-export function generateProjectCard(project) {
+export function generateProjectCard(project, index = 0) {
+  const status = project.status || 'shipped';
+  const statusColor = STATUS_COLOR[status] || STATUS_COLOR.shipped;
+  const idx = String(index + 1).padStart(2, '0');
+  const links = (project.details && project.details.links) || {};
+  const tech = project.tech || [];
+  const visibleTech = tech.slice(0, 4);
+  const moreCount = tech.length - visibleTech.length;
+
   return `
-    <article class="card" data-year="${project.year}" data-type="${project.type}" data-tech="${project.tech.join(',')}">
-      <div class="card-icon">${project.icon}</div>
-      <h3><a href="${project.url}">${project.title}</a></h3>
-      <div class="card-badges">
-        ${generateYearBadge(project.year)}
-        ${generateTypeBadge(project.type)}
+    <article class="card kpc" data-year="${project.year}" data-type="${project.type}" data-tech="${tech.join(',')}">
+      <span class="kpc__rule"></span>
+      <div class="kpc__head">
+        <span class="kpc__idx">${idx}</span>
+        <span class="kpc__status"><span class="kpc__dot" style="background:${statusColor}"></span>${status}</span>
       </div>
-      <p class="card-description">${project.description}</p>
-      <div class="tech-stack">
-        ${generateTechBadges(project.tech, true)}
+      <h3 class="kpc__title">
+        ${project.icon ? `<span class="kpc__emoji" aria-hidden="true">${project.icon}</span>` : ''}
+        <a href="${project.url}" class="kpc__titletxt">${project.title}</a>
+      </h3>
+      <div class="kpc__meta">
+        <span class="kmeta"><span class="kmeta__hash">#</span>${project.type}</span>
+        <span class="kmeta kmeta--line">${project.year}</span>
       </div>
-      <a class="view-btn" href="${project.url}">
-        <span class="btn-icon">👉</span> View Project
-      </a>
+      <p class="kpc__desc card-description">${project.description}</p>
+      <div class="kpc__tech">
+        ${visibleTech.map(t => `<span class="ktag">${t}</span>`).join('')}
+        ${moreCount > 0 ? `<span class="kpc__more">+${moreCount}</span>` : ''}
+      </div>
+      <div class="kpc__foot">
+        <a href="${project.url}" class="kpc__cta">View project <span class="kpc__arrow" aria-hidden="true">→</span></a>
+        <span class="kpc__lnks">
+          ${links.github ? `<a class="kpc__lnk" href="${links.github}" target="_blank" rel="noopener" aria-label="Source">🔗</a>` : ''}
+          ${links.demo ? `<a class="kpc__lnk" href="${links.demo}" target="_blank" rel="noopener" aria-label="Live demo">↗</a>` : ''}
+        </span>
+      </div>
     </article>
   `;
 }
 
 /**
- * Generate GitHub link button
- * @param {string} url - GitHub URL
+ * Generate the about section, applying lead styling to the first paragraph
+ * @param {string|string[]} content - HTML content block(s)
  * @returns {string} HTML string
  */
-function generateGithubLink(url) {
-  if (!url) return '';
-  
+function generateAbout(content) {
+  if (!content) return '';
+
+  const parts = Array.isArray(content) ? content : [content];
+  let leadApplied = false;
+
+  const html = parts.map(part => {
+    if (!leadApplied && part.trim().startsWith('<p>')) {
+      leadApplied = true;
+      return part.replace('<p>', '<p class="klead">');
+    }
+    return part;
+  }).join('');
+
   return `
-    <a href="${url}" class="project-link-btn" target="_blank" rel="noopener">
-      <svg class="link-icon" viewBox="0 0 16 16" width="16" height="16">
-        <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-      </svg>
-      GitHub
-    </a>
+    <div class="kdetail__about">
+      <div class="ds-eyebrow">// about</div>
+      ${html}
+    </div>
   `;
 }
 
 /**
- * Generate Demo link button
- * @param {string} url - Demo URL
- * @returns {string} HTML string
- */
-function generateDemoLink(url) {
-  if (!url) return '';
-  
-  return `
-    <a href="${url}" class="project-link-btn primary" target="_blank" rel="noopener">
-      <svg class="link-icon" viewBox="0 0 16 16" width="16" height="16">
-        <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm3.5 11.5l-3.5-2.5-3.5 2.5V4h7v7.5z"></path>
-      </svg>
-      Live Demo
-    </a>
-  `;
-}
-
-/**
- * Generate gallery section
+ * Generate gallery + lightbox markup
  * @param {string[]} images - Array of image URLs
  * @param {string} projectTitle - Project title for alt text
  * @returns {string} HTML string
  */
 function generateGallery(images, projectTitle) {
   if (!images || images.length === 0) return '';
-  
+
+  const multi = images.length > 1;
+
   return `
-    <div class="project-gallery">
-      <h3 class="section-label">Gallery</h3>
-      <div class="gallery-slider">
-        <div class="slider-wrapper">
-          <div class="slider-track">
-            ${images.map((img, index) => `
-              <div class="slider-item">
-                <img src="${img}" alt="${projectTitle} - Image ${index + 1}" loading="lazy" />
-              </div>
-            `).join('')}
-          </div>
+    <div class="kgal">
+      <div class="ds-eyebrow">// gallery</div>
+      <div class="kgal__viewer">
+        <div class="kgal__track">
+          ${images.map((src, index) => `
+            <button class="kgal__item" type="button" data-index="${index}">
+              <img src="${src}" alt="${projectTitle} screenshot ${index + 1}" loading="lazy" />
+            </button>
+          `).join('')}
         </div>
-        ${images.length > 1 ? `
-          <button class="slider-btn prev" aria-label="Previous image">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <button class="slider-btn next" aria-label="Next image">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-          <div class="slider-dots"></div>
+        ${multi ? `
+          <button class="kibtn kgal__nav kgal__prev" type="button" aria-label="Previous image">${ICONS.chevronLeft}</button>
+          <button class="kibtn kgal__nav kgal__next" type="button" aria-label="Next image">${ICONS.chevronRight}</button>
         ` : ''}
       </div>
+      ${multi ? `<div class="kgal__dots"></div>` : ''}
+    </div>
+    <div class="klightbox">
+      <button class="kibtn klb__close" type="button" aria-label="Close">${ICONS.close}</button>
+      ${multi ? `<button class="kibtn klb__nav klb__prev" type="button" aria-label="Previous">${ICONS.chevronLeft}</button>` : ''}
+      <figure class="klb__stage">
+        <img class="klb__img" src="" alt="" />
+        <figcaption class="klb__count"></figcaption>
+      </figure>
+      ${multi ? `<button class="kibtn klb__nav klb__next" type="button" aria-label="Next">${ICONS.chevronRight}</button>` : ''}
     </div>
   `;
 }
 
 /**
- * Generate diagram section
+ * Generate architecture diagram section
  * @param {Object} diagram - Diagram configuration object
  * @returns {string} HTML string
  */
 function generateDiagram(diagram) {
   if (!diagram) return '';
-  
+
   return `
-    <div class="project-diagram">
-      <h3 class="section-label">Architecture</h3>
-      <div class="diagram-container">
+    <div class="karch">
+      <div class="ds-eyebrow">// architecture</div>
+      <div class="karch__well ds-well">
         <pre class="mermaid">${diagram.code}</pre>
       </div>
     </div>
@@ -137,55 +158,144 @@ function generateDiagram(diagram) {
  */
 function generateDiscussions(giscusConfig) {
   if (!giscusConfig) return '';
-  
+
   return `
-    <div class="project-discussions">
+    <div class="kdiscuss">
+      <div class="ds-eyebrow">// discussion</div>
       <div class="giscus"></div>
     </div>
   `;
 }
 
 /**
- * Generate complete project detail page HTML
- * @param {Object} project - Project data object
+ * Generate prev/next project navigation
+ * @param {Object|null} prev - Previous project (or null)
+ * @param {Object|null} next - Next project (or null)
+ * @param {string} variant - 'top' or 'bottom', controls layout
  * @returns {string} HTML string
  */
-export function generateProjectDetail(project) {
+function generateProjectNav(prev, next, variant = 'bottom') {
+  if (!prev && !next) return '';
+
   return `
-    <div class="project-hero">
-      <div class="project-header-row">
-        <div class="project-title-section">
-          <div class="project-icon-large">${project.icon}</div>
-          <div class="project-title-wrapper">
-            <h1 class="project-title">${project.title}</h1>
-            <p class="project-summary">${project.details.summary}</p>
+    <nav class="kpnav kpnav--${variant}">
+      ${prev ? `
+        <a href="${BASE_PATH}/${prev.url}" class="kpnav__btn kpnav__prev" aria-label="Previous project: ${prev.title}">
+          ${ICONS.arrowLeft}
+          <span class="kpnav__title">${prev.icon ? `${prev.icon} ` : ''}${prev.title}</span>
+        </a>
+      ` : '<span></span>'}
+      ${next ? `
+        <a href="${BASE_PATH}/${next.url}" class="kpnav__btn kpnav__next" aria-label="Next project: ${next.title}">
+          <span class="kpnav__title">${next.icon ? `${next.icon} ` : ''}${next.title}</span>
+          ${ICONS.arrowRight}
+        </a>
+      ` : '<span></span>'}
+    </nav>
+  `;
+}
+
+/**
+ * Generate complete project detail page HTML
+ * @param {Object} project - Project data object
+ * @param {Object|null} prev - Previous project in listing order
+ * @param {Object|null} next - Next project in listing order
+ * @param {number} index - Position of the project in the list (0-based)
+ * @returns {string} HTML string
+ */
+export function generateProjectDetail(project, prev, next, index) {
+  const status = project.status || 'shipped';
+  const statusColor = STATUS_COLOR[status] || STATUS_COLOR.shipped;
+  const idx = String(index + 1).padStart(2, '0');
+  const links = project.details.links || {};
+  const tech = project.tech || [];
+
+  return `
+    <div class="kdetail">
+      <div class="kwrap">
+        <div class="kdetail__topnav">
+          <a href="${BASE_PATH}/" class="kback">${ICONS.arrowLeft} All projects</a>
+          ${generateProjectNav(prev, next, 'top')}
+        </div>
+
+        <div class="kdetail__hero">
+          <div class="kdetail__top">
+            <div style="flex:1">
+              <div class="kdetail__idrow">
+                <span class="kdetail__idx">${idx}</span>
+                <span class="kpc__status"><span class="kpc__dot" style="background:${statusColor}"></span>${status}</span>
+              </div>
+              <h1 class="kdetail__title">${project.icon ? `<span aria-hidden="true" style="margin-right:10px">${project.icon}</span>` : ''}${project.title}</h1>
+              <p class="kdetail__summary">${project.details.summary}</p>
+            </div>
+            <div class="kdetail__actions">
+              ${links.demo ? `<a href="${links.demo}" class="kbtn kbtn--primary" target="_blank" rel="noopener">Live demo ↗</a>` : ''}
+              ${links.github ? `<a href="${links.github}" class="kbtn kbtn--secondary" target="_blank" rel="noopener">🔗 Source</a>` : ''}
+            </div>
+          </div>
+          <div class="kdetail__metarow">
+            <span class="kmeta"><span class="kmeta__hash">#</span>${project.type}</span>
+            <span class="kmeta kmeta--line">${project.year}</span>
+            <span class="kdetail__tech">${tech.map(t => `<span class="ktag">${t}</span>`).join('')}</span>
           </div>
         </div>
-        <div class="project-links">
-          ${generateGithubLink(project.details.links.github)}
-          ${generateDemoLink(project.details.links.demo)}
-        </div>
-      </div>
-      
-      <div class="project-meta-section">
-        <div class="project-meta-badges">
-          ${generateYearBadgeDetail(project.year)}
-          ${generateTypeBadgeDetail(project.type)}
-        </div>
-        <div class="tech-badges-grid">
-          ${generateTechBadges(project.tech, false)}
+
+        <div class="kdetail__body">
+          ${generateAbout(project.details.content)}
+          ${generateGallery(project.details.images, project.title)}
+          ${generateDiagram(project.details.diagram)}
+          ${generateDiscussions(project.details.giscus)}
+          ${generateProjectNav(prev, next, 'bottom')}
         </div>
       </div>
     </div>
+  `;
+}
 
-    <div class="project-content">
-      <h3 class="section-label">About</h3>
-      <div class="project-about">${Array.isArray(project.details.content) ? project.details.content.join('') : project.details.content}</div>
+/**
+ * Generate the header social links / contact button from config.
+ * Rendered into the `#headerSocial` slot so links live in one place (config).
+ * @param {Object} config - Site config (expects `social`)
+ * @returns {string} HTML string
+ */
+export function generateHeaderSocial(config = {}) {
+  const s = config.social || {};
+  if (!s.github && !s.linkedin && !s.email) return '';
+
+  return `
+    <span class="khead__sep"></span>
+    ${s.github ? `<a href="${s.github}" target="_blank" rel="noopener" class="kibtn" aria-label="GitHub">🔗</a>` : ''}
+    ${s.linkedin ? `<a href="${s.linkedin}" target="_blank" rel="noopener" class="kibtn" aria-label="LinkedIn">💼</a>` : ''}
+    ${s.email ? `<a href="mailto:${s.email}" class="kbtn kbtn--secondary">📧 Contact</a>` : ''}
+  `;
+}
+
+/**
+ * Generate the site footer from config. Single source of truth shared by
+ * every page, rendered into the `#siteFooter` slot.
+ * @param {Object} config - Site config (expects `siteName`, `social`, `footer`)
+ * @returns {string} HTML string
+ */
+export function generateFooter(config = {}) {
+  const s = config.social || {};
+  const footer = config.footer || {};
+  const year = new Date().getFullYear();
+  const prompt = footer.prompt || 'echo "thanks for visiting"';
+  const note = footer.note || '';
+
+  const links = [];
+  if (s.github) links.push(`<a href="${s.github}" target="_blank" rel="noopener">🔗 GitHub</a>`);
+  if (s.linkedin) links.push(`<a href="${s.linkedin}" target="_blank" rel="noopener">💼 LinkedIn</a>`);
+  if (s.email) links.push(`<a href="mailto:${s.email}">📧 Email</a>`);
+
+  return `
+    <div class="kwrap kfoot__in">
+      <div class="kfoot__brand">
+        <span class="kfoot__prompt"><span style="color:var(--accent)">david</span>@<span style="color:var(--data)">portfolio</span>:~$ <span style="color:var(--text-primary)">${prompt}</span></span>
+        <span class="kfoot__copy">© ${year} ${config.siteName || ''}${note ? ` · ${note}` : ''}</span>
+      </div>
+      <div class="kfoot__links">${links.join('')}</div>
     </div>
-
-    ${generateGallery(project.details.images, project.title)}
-    ${generateDiagram(project.details.diagram)}
-    ${generateDiscussions(project.details.giscus)}
   `;
 }
 

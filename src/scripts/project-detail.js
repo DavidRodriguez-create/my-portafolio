@@ -5,14 +5,13 @@
 
 import { fetchProjects, findProjectById } from './services/api.js';
 import { generateProjectDetail } from './templates/html-generators.js';
-import { 
-  getElementById, 
+import { initThemeToggle, renderChrome } from './modules/layout.js';
+import {
+  getElementById,
   querySelector,
-  updateHTML, 
-  updateTitle, 
-  updateMetaTag,
-  updateTextContent,
-  getCurrentYear 
+  updateHTML,
+  updateTitle,
+  updateMetaTag
 } from './utils/dom.js';
 import { GISCUS_DEFAULTS } from './config/constants.js';
 
@@ -81,332 +80,143 @@ function initMermaidDiagram(diagram) {
 }
 
 /**
- * Initialize image slider
+ * Initialize the gallery slider (prev/next + dots) and its lightbox
  */
-function initImageSlider() {
-  const sliderContainer = querySelector('.gallery-slider');
-  if (!sliderContainer) return;
-  
-  const track = sliderContainer.querySelector('.slider-track');
-  const items = sliderContainer.querySelectorAll('.slider-item');
-  const dotsContainer = sliderContainer.querySelector('.slider-dots');
-  const prevBtn = sliderContainer.querySelector('.slider-btn.prev');
-  const nextBtn = sliderContainer.querySelector('.slider-btn.next');
-  
-  if (!track || items.length <= 1) return;
-  
-  let currentIndex = 0;
-  let autoPlayInterval;
+function initGallery() {
+  const viewer = querySelector('.kgal__viewer');
+  const track = querySelector('.kgal__track');
+  const items = viewer ? Array.from(document.querySelectorAll('.kgal__item')) : [];
+  const lightbox = querySelector('.klightbox');
+  if (!viewer || !track || !items.length || !lightbox) return;
+
+  const images = items.map(item => item.querySelector('img'));
+  const dotsContainer = querySelector('.kgal__dots');
+  const prevBtn = querySelector('.kgal__prev');
+  const nextBtn = querySelector('.kgal__next');
+
+  const stageImage = lightbox.querySelector('.klb__img');
+  const counter = lightbox.querySelector('.klb__count');
+  const closeBtn = lightbox.querySelector('.klb__close');
+  const lbPrevBtn = lightbox.querySelector('.klb__prev');
+  const lbNextBtn = lightbox.querySelector('.klb__next');
+
   let itemsPerPage = 2;
-  
-  // Calculate items per page based on viewport
+  let currentIndex = 0;
+  let lightboxIndex = 0;
+
   function updateItemsPerPage() {
-    const width = window.innerWidth;
-    if (width < 768) {
-      itemsPerPage = 1;
-    } else {
-      itemsPerPage = 2;
-    }
-    // Update slider item flex basis
-    items.forEach(item => {
-      if (itemsPerPage === 1) {
-        item.style.flex = '0 0 100%';
-      } else {
-        item.style.flex = '0 0 calc(50% - 0.5rem)';
-      }
-    });
+    const target = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+    itemsPerPage = Math.min(target, images.length);
   }
-  
-  function getTotalPages() {
-    return Math.ceil(items.length / itemsPerPage);
+
+  function maxIndex() {
+    return Math.max(0, images.length - itemsPerPage);
   }
-  
+
   function createDots() {
     if (!dotsContainer) return;
-    const totalPages = getTotalPages();
     dotsContainer.innerHTML = '';
-    
+    const totalPages = Math.ceil(images.length / itemsPerPage);
     for (let i = 0; i < totalPages; i++) {
       const dot = document.createElement('button');
-      dot.className = `slider-dot ${i === 0 ? 'active' : ''}`;
-      dot.setAttribute('data-index', i);
+      dot.type = 'button';
+      dot.className = 'kgal__dot';
       dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-      dot.addEventListener('click', () => {
-        stopAutoPlay();
-        goToPage(i);
-        startAutoPlay();
-      });
+      dot.addEventListener('click', () => goTo(i * itemsPerPage));
       dotsContainer.appendChild(dot);
     }
   }
-  
-  function updateDots() {
-    if (!dotsContainer) return;
-    const dots = dotsContainer.querySelectorAll('.slider-dot');
-    const currentPage = Math.floor(currentIndex / itemsPerPage);
-    dots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === currentPage);
-    });
-  }
-  
-  function updateButtons() {
-    if (prevBtn) {
-      prevBtn.disabled = currentIndex === 0;
+
+  function update() {
+    currentIndex = Math.min(currentIndex, maxIndex());
+    const itemWidth = items[0].getBoundingClientRect().width;
+    const gap = 16;
+    track.style.transform = `translateX(-${currentIndex * (itemWidth + gap)}px)`;
+
+    if (dotsContainer) {
+      const currentPage = Math.round(currentIndex / itemsPerPage);
+      dotsContainer.querySelectorAll('.kgal__dot').forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === currentPage);
+      });
     }
-    if (nextBtn) {
-      nextBtn.disabled = currentIndex >= items.length - itemsPerPage;
+
+    if (prevBtn) prevBtn.disabled = currentIndex === 0;
+    if (nextBtn) nextBtn.disabled = currentIndex >= maxIndex();
+  }
+
+  function goTo(index) {
+    currentIndex = Math.min(Math.max(0, index), maxIndex());
+    update();
+  }
+
+  function next() { goTo(currentIndex + 1); }
+  function prev() { goTo(currentIndex - 1); }
+
+  function showLightboxImage(index) {
+    lightboxIndex = index;
+    const img = images[index];
+    stageImage.src = img.src;
+    stageImage.alt = img.alt;
+    counter.textContent = `${index + 1} / ${images.length}`;
+  }
+
+  function nextLightboxImage() { showLightboxImage((lightboxIndex + 1) % images.length); }
+  function prevLightboxImage() { showLightboxImage((lightboxIndex - 1 + images.length) % images.length); }
+
+  function openLightbox(index) {
+    showLightboxImage(index);
+    lightbox.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  items.forEach((item, index) => {
+    item.addEventListener('click', () => openLightbox(index));
+  });
+
+  if (prevBtn) prevBtn.addEventListener('click', prev);
+  if (nextBtn) nextBtn.addEventListener('click', next);
+
+  closeBtn.addEventListener('click', closeLightbox);
+  if (lbPrevBtn) lbPrevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevLightboxImage(); });
+  if (lbNextBtn) lbNextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextLightboxImage(); });
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.classList.contains('is-open')) {
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') prevLightboxImage();
+      else if (e.key === 'ArrowRight') nextLightboxImage();
+    } else if (viewer.matches(':hover')) {
+      if (e.key === 'ArrowLeft') prev();
+      else if (e.key === 'ArrowRight') next();
     }
-  }
-  
-  function goToPage(pageIndex) {
-    currentIndex = Math.min(pageIndex * itemsPerPage, items.length - itemsPerPage);
-    updateSlider();
-  }
-  
-  function updateSlider() {
-    const itemWidth = items[0].offsetWidth;
-    const gap = 16; // 1rem gap
-    const offset = currentIndex * (itemWidth + gap);
-    
-    track.style.transform = `translateX(-${offset}px)`;
-    updateDots();
-    updateButtons();
-  }
-  
-  function nextSlide() {
-    if (currentIndex < items.length - itemsPerPage) {
-      currentIndex += 1;
-    } else {
-      currentIndex = 0; // Loop back to start
-    }
-    updateSlider();
-  }
-  
-  function prevSlide() {
-    if (currentIndex > 0) {
-      currentIndex -= 1;
-    } else {
-      currentIndex = Math.max(0, items.length - itemsPerPage); // Loop to end
-    }
-    updateSlider();
-  }
-  
-  function startAutoPlay() {
-    autoPlayInterval = setInterval(nextSlide, 7000);
-  }
-  
-  function stopAutoPlay() {
-    if (autoPlayInterval) {
-      clearInterval(autoPlayInterval);
-    }
-  }
-  
-  // Event listeners
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      stopAutoPlay();
-      nextSlide();
-      startAutoPlay();
-    });
-  }
-  
-  if (prevBtn) {
-    prevBtn.addEventListener('click', () => {
-      stopAutoPlay();
-      prevSlide();
-      startAutoPlay();
-    });
-  }
-  
-  // Keyboard navigation
-  let keydownListener = (e) => {
-    if (!sliderContainer.matches(':hover')) return;
-    if (e.key === 'ArrowLeft') {
-      stopAutoPlay();
-      prevSlide();
-      startAutoPlay();
-      e.preventDefault();
-    } else if (e.key === 'ArrowRight') {
-      stopAutoPlay();
-      nextSlide();
-      startAutoPlay();
-      e.preventDefault();
-    }
-  };
-  document.addEventListener('keydown', keydownListener);
-  
-  // Touch/swipe support
-  let touchStartX = 0;
-  let touchEndX = 0;
-  
-  sliderContainer.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  }, { passive: true });
-  
-  sliderContainer.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  }, { passive: true });
-  
-  function handleSwipe() {
-    const swipeThreshold = 50;
-    const diff = touchStartX - touchEndX;
-    
-    if (Math.abs(diff) > swipeThreshold) {
-      stopAutoPlay();
-      if (diff > 0) {
-        nextSlide();
-      } else {
-        prevSlide();
-      }
-      startAutoPlay();
-    }
-  }
-  
-  // Handle window resize
+  });
+
   let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-      const oldItemsPerPage = itemsPerPage;
+      const previous = itemsPerPage;
       updateItemsPerPage();
-      if (oldItemsPerPage !== itemsPerPage) {
+      if (previous !== itemsPerPage) {
         currentIndex = 0;
         createDots();
       }
-      updateSlider();
-    }, 250);
+      update();
+    }, 200);
   });
-  
-  // Initialize
+
   updateItemsPerPage();
   createDots();
-  updateSlider();
-  startAutoPlay();
-  
-  // Pause on hover
-  sliderContainer.addEventListener('mouseenter', stopAutoPlay);
-  sliderContainer.addEventListener('mouseleave', startAutoPlay);
-  
-  // Add click event to images for lightbox
-  items.forEach((item, index) => {
-    item.addEventListener('click', () => {
-      openLightbox(index);
-    });
-  });
-}
-
-/**
- * Initialize lightbox for image viewing
- */
-function initLightbox() {
-  const gallerySlider = querySelector('.gallery-slider');
-  if (!gallerySlider) return;
-  
-  const images = Array.from(gallerySlider.querySelectorAll('.slider-item img'));
-  if (images.length === 0) return;
-  
-  // Create lightbox HTML
-  const lightbox = document.createElement('div');
-  lightbox.className = 'lightbox';
-  lightbox.innerHTML = `
-    <button class="lightbox-close" aria-label="Close lightbox">
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    <button class="lightbox-nav prev" aria-label="Previous image">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
-    <div class="lightbox-content">
-      <img class="lightbox-image" src="" alt="" />
-    </div>
-    <button class="lightbox-nav next" aria-label="Next image">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
-    <div class="lightbox-counter"></div>
-  `;
-  
-  document.body.appendChild(lightbox);
-  
-  const lightboxImage = lightbox.querySelector('.lightbox-image');
-  const lightboxClose = lightbox.querySelector('.lightbox-close');
-  const lightboxPrev = lightbox.querySelector('.lightbox-nav.prev');
-  const lightboxNext = lightbox.querySelector('.lightbox-nav.next');
-  const lightboxCounter = lightbox.querySelector('.lightbox-counter');
-  
-  let currentLightboxIndex = 0;
-  
-  function showLightboxImage(index) {
-    currentLightboxIndex = index;
-    const img = images[index];
-    lightboxImage.src = img.src;
-    lightboxImage.alt = img.alt;
-    lightboxCounter.textContent = `${index + 1} / ${images.length}`;
-    
-    // Update navigation button states
-    if (images.length <= 1) {
-      lightboxPrev.style.display = 'none';
-      lightboxNext.style.display = 'none';
-    } else {
-      lightboxPrev.style.display = 'flex';
-      lightboxNext.style.display = 'flex';
-    }
-  }
-  
-  function openLightboxAt(index) {
-    showLightboxImage(index);
-    lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-  
-  function closeLightbox() {
-    lightbox.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-  
-  function nextLightboxImage() {
-    const nextIndex = (currentLightboxIndex + 1) % images.length;
-    showLightboxImage(nextIndex);
-  }
-  
-  function prevLightboxImage() {
-    const prevIndex = (currentLightboxIndex - 1 + images.length) % images.length;
-    showLightboxImage(prevIndex);
-  }
-  
-  // Event listeners
-  lightboxClose.addEventListener('click', closeLightbox);
-  lightboxNext.addEventListener('click', nextLightboxImage);
-  lightboxPrev.addEventListener('click', prevLightboxImage);
-  
-  // Close on background click
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) {
-      closeLightbox();
-    }
-  });
-  
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (!lightbox.classList.contains('active')) return;
-    
-    if (e.key === 'Escape') {
-      closeLightbox();
-    } else if (e.key === 'ArrowLeft') {
-      prevLightboxImage();
-    } else if (e.key === 'ArrowRight') {
-      nextLightboxImage();
-    }
-  });
-  
-  // Store the open function globally so slider can call it
-  window.openLightbox = openLightboxAt;
+  update();
 }
 
 /**
@@ -440,20 +250,24 @@ function showProjectNotFound(container) {
 /**
  * Render project details
  * @param {Object} project - Project object
+ * @param {Object[]} projects - Full list of projects (for prev/next navigation)
  * @param {HTMLElement} container - Container element
  * @param {string} siteName - Site name
  */
-function renderProjectDetail(project, container, siteName) {
+function renderProjectDetail(project, projects, container, siteName) {
   updatePageMetadata(project, siteName);
-  
-  const html = generateProjectDetail(project);
+
+  const index = projects.findIndex(p => p.id === project.id);
+  const prev = index > 0 ? projects[index - 1] : null;
+  const next = index >= 0 && index < projects.length - 1 ? projects[index + 1] : null;
+
+  const html = generateProjectDetail(project, prev, next, index);
   updateHTML(container, html);
-  
+
   // Initialize additional features
   initGiscus(project.details.giscus);
   initMermaidDiagram(project.details.diagram);
-  initLightbox();
-  initImageSlider();
+  initGallery();
 }
 
 /**
@@ -478,21 +292,12 @@ async function initProjectDetailPage() {
       throw new Error('Project not found');
     }
     
-    renderProjectDetail(project, detailSection, data.config.siteName);
-  
+    renderProjectDetail(project, data.projects, detailSection, data.config.siteName);
+    renderChrome(data.config);
+
   } catch (error) {
     console.error('Failed to load project:', error);
     showProjectNotFound(detailSection);
-  }
-}
-
-/**
- * Update footer with current year
- */
-function updateFooter() {
-  const yearNow = getElementById('yearNow');
-  if (yearNow) {
-    updateTextContent(yearNow, getCurrentYear());
   }
 }
 
@@ -500,9 +305,9 @@ function updateFooter() {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     initProjectDetailPage();
-    updateFooter();
+    initThemeToggle();
   });
 } else {
   initProjectDetailPage();
-  updateFooter();
+  initThemeToggle();
 }

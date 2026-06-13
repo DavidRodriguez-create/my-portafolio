@@ -5,62 +5,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>David Rodríguez Hernández — Projects</title>
   <meta name="description" content="Filterable portfolio with per-project pages." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+  <script>
+    /* apply theme before paint to avoid a flash of the wrong theme */
+    try {
+      var saved = localStorage.getItem('dr-theme');
+      var t = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  </script>
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-top">
-      <div class="header-content">
-        <div>
-          <h1>
-            <span class="header-icon">👨‍💻</span>
-            David Rodríguez Hernández
-          </h1>
-          <p class="header-subtitle">Full Stack Developer & Data Engineer</p>
-        </div>
-        <div class="header-links">
-          <a href="https://github.com/DavidRodriguez-create" target="_blank" rel="noopener" class="header-link">
-            <span class="icon">🔗</span> GitHub
-          </a>
-          <a href="https://linkedin.com/in/yourprofile" target="_blank" rel="noopener" class="header-link">
-            <span class="icon">💼</span> LinkedIn
-          </a>
-          <a href="mailto:your.email@example.com" class="header-link">
-            <span class="icon">📧</span> Contact
-          </a>
-        </div>
-      </div>
-    </div>
-    
-    <div class="filters-section">
-      <div class="filters-wrapper">
-        <h2 class="filters-title">
-          🔍 Filter Projects <span class="filters-count" id="projectCount"></span>
-        </h2>
-        <div class="filters">
-          <div class="custom-select-wrapper">
-            <label class="filter-label">Year:</label>
-            <select id="yearFilter"><option value="">All</option></select>
-          </div>
-          <div class="custom-select-wrapper">
-            <label class="filter-label">Technologies:</label>
-            <select id="techFilter"><option value="">All</option></select>
-          </div>
-          <div class="custom-select-wrapper">
-            <label class="filter-label">Type:</label>
-            <select id="typeFilter"><option value="">All</option></select>
-          </div>
-          <input id="searchInput" type="search" placeholder="Search projects…" />
-        </div>
-      </div>
+  <header class="khead">
+    <div class="khead__in">
+      <a href="/" class="klogo">
+        <span class="klogo__mono">DR</span>
+        <span class="klogo__txt">David <span class="klogo__last">Rodríguez</span></span>
+      </a>
+      <nav class="khead__nav">
+        <button id="themeToggle" class="kibtn" type="button" aria-label="Toggle color theme" title="Toggle color theme">
+          <span class="theme-icon-dark">🌙</span>
+          <span class="theme-icon-light">☀️</span>
+        </button>
+        <!-- social links injected from config via layout.js -->
+        <span id="headerSocial"></span>
+      </nav>
     </div>
   </header>
 
+  <section class="khero ds-grid-bg">
+    <div class="khero__in khero__in--term">
+      <div class="kterm ds-well">
+        <div class="kterm__bar">
+          <span class="kterm__dot"></span><span class="kterm__dot"></span><span class="kterm__dot"></span>
+          <span class="kterm__path">david@portfolio: ~</span>
+        </div>
+        <div class="kterm__body">
+          <p class="kterm__line"><span class="kterm__pr">david@portfolio:~$</span> whoami</p>
+          <p class="kterm__out" id="heroWhoami">David Rodríguez Hernández — Full Stack Developer &amp; Data Engineer</p>
+          <p class="kterm__line"><span class="kterm__pr">david@portfolio:~$</span> cat about.txt</p>
+          <p class="kterm__out kterm__lead" id="heroBlurb">Building full-stack apps, APIs and data pipelines — Java, Go, Python and whatever else gets the job done.</p>
+          <p class="kterm__line"><span class="kterm__pr">david@portfolio:~$</span> ls projects/ | stats</p>
+          <p class="kterm__out" id="heroStats"></p>
+          <p class="kterm__line"><span class="kterm__pr">david@portfolio:~$</span> open --work<span class="ds-caret"></span></p>
+        </div>
+      </div>
+      <div class="kterm__side">
+        <span class="ds-eyebrow ds-eyebrow--lime">portfolio</span>
+        <h1 class="khero__h">Selected work,<br>from the source.</h1>
+        <div class="khero__cta">
+          <a href="#listView" class="kbtn kbtn--primary">View work ↓</a>
+          <a id="heroSource" href="#" target="_blank" rel="noopener" class="kbtn kbtn--secondary">🔗 Source</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="filters-section">
+    <div class="filters-wrapper">
+      <h2 class="filters-title">
+        🔍 Filter Projects <span class="filters-count" id="projectCount"></span>
+      </h2>
+      <div class="filters">
+        <div class="custom-select-wrapper">
+          <label class="filter-label">Year:</label>
+          <select id="yearFilter"><option value="">All</option></select>
+        </div>
+        <div class="custom-select-wrapper">
+          <label class="filter-label">Technologies:</label>
+          <select id="techFilter"><option value="">All</option></select>
+        </div>
+        <div class="custom-select-wrapper">
+          <label class="filter-label">Type:</label>
+          <select id="typeFilter"><option value="">All</option></select>
+        </div>
+        <input id="searchInput" type="search" placeholder="Search projects…" />
+      </div>
+    </div>
+  </div>
+
   <main class="grid">
-    <section id="listView" class="cards" aria-label="Project list">
+    <section id="listView" class="cards kgrid" aria-label="Project list">
       <!-- Projects loaded dynamically from projects.json via site-refactored.js -->
       <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
         <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
@@ -69,9 +100,8 @@
     </section>
   </main>
 
-  <footer class="site-footer">
-    <small>© <span id="yearNow"></span> David Rodríguez Hernández</small>
-  </footer>
+  <!-- footer injected from config via layout.js -->
+  <footer class="kfoot" id="siteFooter"></footer>
 
   <script type="module" src="js/site.js"></script>
 </body>

@@ -5,26 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta property="og:title" content="Project — Portfolio" />
   <title>Project — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css" />
   <link rel="stylesheet" href="/css/matrix-effect.css" />
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>mermaid.initialize({ startOnLoad: true, theme: 'dark' });</script>
+  <script>
+    /* apply theme before paint to avoid a flash of the wrong theme */
+    try {
+      var saved = localStorage.getItem('dr-theme');
+      var t = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  </script>
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-top">
-      <div class="header-content" style="justify-content: space-between;">
-        <a href="/" class="back-link">
-          <span class="back-icon">←</span> Back to Projects
-        </a>
-        <div class="project-meta-header" id="projectMetaHeader"></div>
-      </div>
+  <header class="khead">
+    <div class="khead__in">
+      <a href="/" class="klogo">
+        <span class="klogo__mono">DR</span>
+        <span class="klogo__txt">David <span class="klogo__last">Rodríguez</span></span>
+      </a>
+      <nav class="khead__nav">
+        <button id="themeToggle" class="kibtn" type="button" aria-label="Toggle color theme" title="Toggle color theme">
+          <span class="theme-icon-dark">🌙</span>
+          <span class="theme-icon-light">☀️</span>
+        </button>
+      </nav>
     </div>
   </header>
 
   <main class="grid">
-    <section id="projectDetail" class="detail" aria-label="Project detail">
-      <!-- Project loaded dynamically from URL via project-detail-refactored.js -->
+    <section id="projectDetail" aria-label="Project detail">
+      <!-- Project loaded dynamically from URL via project-detail.js -->
       <div class="loading-state">
         <div class="loading-icon">⏳</div>
         <p>Loading project...</p>
@@ -32,9 +47,8 @@
     </section>
   </main>
 
-  <footer class="site-footer">
-    <small>© <span id="yearNow"></span> David Rodríguez Hernández</small>
-  </footer>
+  <!-- footer injected from config via layout.js -->
+  <footer class="kfoot" id="siteFooter"></footer>
 
   <script type="module" src="/js/error-page.js"></script>
   <script type="module" src="/js/project-detail.js"></script>

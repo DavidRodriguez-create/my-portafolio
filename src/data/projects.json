@@ -2,7 +2,7 @@
   "projects": [
     {
       "id": "impostor",
-      "title": "🎭 Impostor Game",
+      "title": "Impostor Game",
       "icon": "🎭",
       "year": 2026,
       "type": "game",
@@ -115,10 +115,15 @@
   "config": {
     "siteName": "David Rodríguez Hernández",
     "tagline": "Full Stack Developer & Data Engineer",
+    "blurb": "Building full-stack apps, APIs and data pipelines — Java, Go, Python and whatever else gets the job done.",
     "social": {
       "github": "https://github.com/DavidRodriguez-create",
       "linkedin": "https://www.linkedin.com/in/davidrodriguezhernandez-software/",
       "email": "david.rodriguez.form@gmail.com"
+    },
+    "footer": {
+      "prompt": "echo \"thanks for visiting\"",
+      "note": "built for fun"
     }
   }
 }

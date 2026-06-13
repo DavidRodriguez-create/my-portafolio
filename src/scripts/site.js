@@ -12,14 +12,14 @@ import {
 } from './services/api.js';
 import { generateProjectCard } from './templates/html-generators.js';
 import { initializeFilters, updateFilterCount } from './modules/filters.js';
-import { 
-  getElementById, 
-  querySelector, 
+import { initThemeToggle, renderChrome } from './modules/layout.js';
+import {
+  getElementById,
+  querySelector,
   querySelectorAll,
-  updateTextContent, 
-  updateHTML, 
-  updateTitle,
-  getCurrentYear 
+  updateTextContent,
+  updateHTML,
+  updateTitle
 } from './utils/dom.js';
 
 /**
@@ -28,19 +28,45 @@ import {
  */
 function updateSiteHeader(config) {
   if (!config) return;
-  
+
   updateTitle(`${config.siteName} — Portfolio`);
-  
-  const headerTitle = querySelector('h1');
-  const headerSubtitle = querySelector('.header-subtitle');
-  
-  if (headerTitle) {
-    headerTitle.innerHTML = `<span class="header-icon">👨‍💻</span><span class="header-name">${config.siteName}</span>`;
+
+  const heroWhoami = getElementById('heroWhoami');
+  if (heroWhoami) {
+    updateTextContent(heroWhoami, `${config.siteName} — ${config.tagline}`);
   }
-  
-  if (headerSubtitle) {
-    updateTextContent(headerSubtitle, config.tagline);
+
+  const heroBlurb = getElementById('heroBlurb');
+  if (heroBlurb && config.blurb) {
+    updateTextContent(heroBlurb, config.blurb);
   }
+
+  const heroSource = getElementById('heroSource');
+  if (heroSource && config.social && config.social.github) {
+    heroSource.href = config.social.github;
+  }
+}
+
+/**
+ * Fill in the hero terminal's "ls projects/ | stats" line
+ * @param {Object[]} projects - Array of project objects
+ */
+function updateHeroStats(projects) {
+  const heroStats = getElementById('heroStats');
+  if (!heroStats || !Array.isArray(projects) || projects.length === 0) return;
+
+  const techCount = getUniqueTechnologies(projects).length;
+  const since = Math.min(...projects.map(p => p.year));
+
+  const stats = [
+    { v: `${projects.length}+`, k: 'shipped' },
+    { v: `${techCount}`, k: 'technologies' },
+    { v: `${since}`, k: 'since' }
+  ];
+
+  heroStats.innerHTML = stats
+    .map((s, i) => `<span class="kterm__stat"><span class="kterm__sv">${s.v}</span> ${s.k}${i < stats.length - 1 ? '<span class="kterm__sep">·</span>' : ''}</span>`)
+    .join('');
 }
 
 /**
@@ -51,7 +77,7 @@ function updateSiteHeader(config) {
 function renderProjects(projects, container) {
   if (!container || !Array.isArray(projects)) return;
   
-  const html = projects.map(project => generateProjectCard(project)).join('');
+  const html = projects.map((project, index) => generateProjectCard(project, index)).join('');
   updateHTML(container, html);
   
   // Update project count
@@ -136,6 +162,7 @@ async function initHomePage() {
     // Update site configuration
     if (data.config) {
       updateSiteHeader(data.config);
+      renderChrome(data.config);
       initTitleAnimation(data.config.siteName);
     }
     
@@ -144,6 +171,7 @@ async function initHomePage() {
       console.log(`Rendering ${data.projects.length} projects`);
       renderProjects(data.projects, listView);
       setupFilters(data.projects);
+      updateHeroStats(data.projects);
     } else {
       console.warn('No projects found in data');
     }
@@ -160,23 +188,13 @@ async function initHomePage() {
   }
 }
 
-/**
- * Update footer with current year
- */
-function updateFooter() {
-  const yearNow = getElementById('yearNow');
-  if (yearNow) {
-    updateTextContent(yearNow, getCurrentYear());
-  }
-}
-
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     initHomePage();
-    updateFooter();
+    initThemeToggle();
   });
 } else {
   initHomePage();
-  updateFooter();
+  initThemeToggle();
 }
