@@ -19,6 +19,14 @@ export function initThemeToggle() {
     const next = current === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('dr-theme', next); } catch (e) {}
+
+    const giscusFrame = document.querySelector('iframe.giscus-frame');
+    if (giscusFrame) {
+      giscusFrame.contentWindow.postMessage(
+        { giscus: { setConfig: { theme: next === 'dark' ? 'dark_dimmed' : 'light' } } },
+        'https://giscus.app'
+      );
+    }
   });
 }
 

@@ -58,7 +58,8 @@ function initGiscus(giscusConfig) {
   script.setAttribute('data-reactions-enabled', giscusConfig.reactionsEnabled || GISCUS_DEFAULTS.reactionsEnabled);
   script.setAttribute('data-emit-metadata', giscusConfig.emitMetadata || GISCUS_DEFAULTS.emitMetadata);
   script.setAttribute('data-input-position', giscusConfig.inputPosition || GISCUS_DEFAULTS.inputPosition);
-  script.setAttribute('data-theme', giscusConfig.theme || GISCUS_DEFAULTS.theme);
+  const siteTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  script.setAttribute('data-theme', siteTheme === 'dark' ? 'dark_dimmed' : 'light');
   script.setAttribute('data-lang', giscusConfig.lang || GISCUS_DEFAULTS.lang);
   script.setAttribute('data-loading', giscusConfig.loading || GISCUS_DEFAULTS.loading);
   script.setAttribute('crossorigin', 'anonymous');

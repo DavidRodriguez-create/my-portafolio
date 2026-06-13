@@ -6,9 +6,9 @@
 import { BASE_PATH } from '../config/constants.js';
 
 const STATUS_COLOR = {
-  shipped: 'var(--success)',
+  live: 'var(--success)',
   building: 'var(--warning)',
-  archived: 'var(--text-faint)'
+  complete: 'var(--text-faint)'
 };
 
 const ICONS = {
@@ -26,8 +26,8 @@ const ICONS = {
  * @returns {string} HTML string
  */
 export function generateProjectCard(project, index = 0) {
-  const status = project.status || 'shipped';
-  const statusColor = STATUS_COLOR[status] || STATUS_COLOR.shipped;
+  const status = project.status || 'live';
+  const statusColor = STATUS_COLOR[status] || STATUS_COLOR.live;
   const idx = String(index + 1).padStart(2, '0');
   const links = (project.details && project.details.links) || {};
   const tech = project.tech || [];
@@ -204,8 +204,8 @@ function generateProjectNav(prev, next, variant = 'bottom') {
  * @returns {string} HTML string
  */
 export function generateProjectDetail(project, prev, next, index) {
-  const status = project.status || 'shipped';
-  const statusColor = STATUS_COLOR[status] || STATUS_COLOR.shipped;
+  const status = project.status || 'live';
+  const statusColor = STATUS_COLOR[status] || STATUS_COLOR.live;
   const idx = String(index + 1).padStart(2, '0');
   const links = project.details.links || {};
   const tech = project.tech || [];
@@ -230,6 +230,7 @@ export function generateProjectDetail(project, prev, next, index) {
             </div>
             <div class="kdetail__actions">
               ${links.demo ? `<a href="${links.demo}" class="kbtn kbtn--primary" target="_blank" rel="noopener">Live demo ↗</a>` : ''}
+              ${links.docs ? `<a href="${links.docs}" class="kbtn kbtn--primary" target="_blank" rel="noopener">Docs ↗</a>` : ''}
               ${links.github ? `<a href="${links.github}" class="kbtn kbtn--secondary" target="_blank" rel="noopener">🔗 Source</a>` : ''}
             </div>
           </div>

@@ -5,6 +5,7 @@
       "title": "Impostor Game",
       "icon": "🎭",
       "year": 2026,
+      "status": "live",
       "type": "game",
       "description": "Instant-play party game. No downloads needed! Open the browser and start playing with friends. Available in multiple languages (ES/EN/FR/ZH) with automatic word translation. Simple social deduction mechanics with voting system and swipe-to-reveal roles. Works offline as PWA.",
       "tech": ["Vanilla JavaScript", "Vite", "PWA", "i18n"],
@@ -61,10 +62,66 @@
       }
     },
     {
+      "id": "jobhub",
+      "title": "JobHub",
+      "icon": "💼",
+      "year": 2026,
+      "status": "building",
+      "type": "fullstack",
+      "description": "Stop browsing job sites page by page. JobHub crawls postings for you, gives you one place to search and filter them, and tracks every application so you always know where you stand. Built as a real-world exercise in designing multi-service architecture beyond the usual POCs.",
+      "tech": ["Java 21", "Quarkus", "React", "PostgreSQL", "Podman"],
+      "url": "projects/jobhub/",
+      "featured": true,
+      "details": {
+        "summary": "One place to find, filter, and track job applications — so you can focus on landing the job, not managing spreadsheets.",
+        "content": [
+          "<p><strong>Job hunting shouldn't feel like a second job.</strong></p>",
+          "<p>You know the drill: open LinkedIn, scroll through pages, check another job board, copy a link into a spreadsheet, lose track of what you applied to last week. It's exhausting and it adds up fast when you're already in a stressful situation.</p>",
+          "<p>JobHub takes that off your plate.</p>",
+          "<p><strong>What it does:</strong></p>",
+          "<ul>",
+          "<li><strong>Crawls job postings</strong> automatically — no more going site by site</li>",
+          "<li><strong>Search and filter</strong> from a single interface with saved presets, so you don't repeat the same searches every day</li>",
+          "<li><strong>Track every application</strong> with a timeline: applied, interviewing, offer, rejected — always know where each one stands</li>",
+          "<li><strong>Dashboard with stats</strong> so you can see your progress at a glance instead of guessing</li>",
+          "</ul>",
+          "<p><strong>Why I built it:</strong></p>",
+          "<p>After building games and small proof-of-concepts, I wanted to tackle something with real architectural complexity — multiple services with clear boundaries, a shared database with proper isolation, user authentication, and a frontend that ties it all together. I used GenAI to speed up implementation so I could focus on the architecture and functional design rather than boilerplate.</p>",
+          "<p>The technical details (service breakdown, API contracts, deployment) are all in the <a href='https://davidrodriguez-create.github.io/JobHub/' target='_blank'>docs</a>.</p>",
+          "<p><em>A tool born from the frustration of job hunting, and the ambition to build something more complex than what I'd done before.</em></p>"
+        ],
+        "links": {
+          "github": "https://github.com/DavidRodriguez-create/JobHub",
+          "docs": "https://davidrodriguez-create.github.io/JobHub/",
+          "discussions": "https://github.com/DavidRodriguez-create/my-portafolio/discussions"
+        },
+        "images": [],
+        "diagram": {
+          "type": "mermaid",
+          "code": "graph LR\n    UI[\"JobHub-ui<br/>(React + Vite)\"] -->|/auth| Auth[\"auth-service<br/>(Quarkus :8082)\"]\n    UI -->|/jobs| Job[\"job-service<br/>(Quarkus :8081)\"]\n    UI -->|/applications| App[\"application-service<br/>(Quarkus :8083)\"]\n    Crawler[\"crawler-service<br/>(scheduled)\"] --> DB\n    App -->|snapshot| Job\n    App -->|verify| Auth\n    Auth --> DB[(\"PostgreSQL<br/>schema-per-service\")]\n    Job --> DB\n    App --> DB"
+        },
+        "giscus": {
+          "repo": "DavidRodriguez-create/JobHub",
+          "repoId": "R_kgDOSdpLCQ",
+          "category": "Q&A",
+          "categoryId": "DIC_kwDOSdpLCc4C_Gvc",
+          "mapping": "og:title",
+          "strict": "0",
+          "reactionsEnabled": "0",
+          "emitMetadata": "0",
+          "inputPosition": "top",
+          "theme": "preferred_color_scheme",
+          "lang": "en",
+          "loading": "lazy"
+        }
+      }
+    },
+    {
       "id": "pay-and-go",
       "title": "Pay & Go",
       "icon": "💳",
       "year": 2025,
+      "status": "complete",
       "type": "backend",
       "description": "Event-driven payment microservices platform built with Go. Learning project exploring Clean Architecture, Domain-Driven Design, and real-time event streaming with Kafka. Features account and card management services with asynchronous communication.",
       "tech": ["Go", "Apache Kafka", "Clean Architecture", "Podman", "Kubernetes"],

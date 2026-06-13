@@ -16,7 +16,7 @@
     /* apply theme before paint to avoid a flash of the wrong theme */
     try {
       var saved = localStorage.getItem('dr-theme');
-      var t = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark');
+      var t = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
       document.documentElement.setAttribute('data-theme', t);
     } catch (e) {}
   </script>
