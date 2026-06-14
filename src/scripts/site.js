@@ -55,14 +55,17 @@ function updateHeroStats(projects) {
   const heroStats = getElementById('heroStats');
   if (!heroStats || !Array.isArray(projects) || projects.length === 0) return;
 
+  const count = (s) => projects.filter(p => p.status === s).length;
   const techCount = getUniqueTechnologies(projects).length;
   const since = Math.min(...projects.map(p => p.year));
 
   const stats = [
-    { v: `${projects.length}+`, k: 'shipped' },
-    { v: `${techCount}`, k: 'technologies' },
-    { v: `${since}`, k: 'since' }
-  ];
+    { v: count('live'), k: 'live' },
+    { v: count('building'), k: 'building' },
+    { v: count('complete'), k: 'complete' },
+    { v: techCount, k: 'technologies' },
+    { v: since, k: 'since' }
+  ].filter(s => s.v > 0);
 
   heroStats.innerHTML = stats
     .map((s, i) => `<span class="kterm__stat"><span class="kterm__sv">${s.v}</span> ${s.k}${i < stats.length - 1 ? '<span class="kterm__sep">·</span>' : ''}</span>`)
