@@ -81,7 +81,7 @@ export function populateSelect(selectElement, options) {
 export function updateFilterCount(element, visibleCount, totalCount) {
   if (!element) return;
   
-  element.textContent = `(${visibleCount} of ${totalCount})`;
+  element.textContent = `${visibleCount} ${visibleCount === 1 ? 'project' : 'projects'}`;
 }
 
 /**

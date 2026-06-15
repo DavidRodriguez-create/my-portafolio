@@ -10,7 +10,7 @@ import {
   getUniqueTechnologies, 
   getUniqueTypes 
 } from './services/api.js';
-import { generateProjectCard } from './templates/html-generators.js';
+import { generateProjectCard, generateProjectRow } from './templates/html-generators.js';
 import { initializeFilters, updateFilterCount } from './modules/filters.js';
 import { initThemeToggle, renderChrome } from './modules/layout.js';
 import {
@@ -72,22 +72,54 @@ function updateHeroStats(projects) {
     .join('');
 }
 
+let currentLayout = 'cards';
+
 /**
- * Render projects to the DOM
+ * Render projects to the DOM in the current layout
  * @param {Object[]} projects - Array of project objects
  * @param {HTMLElement} container - Container element
  */
 function renderProjects(projects, container) {
   if (!container || !Array.isArray(projects)) return;
-  
-  const html = projects.map((project, index) => generateProjectCard(project, index)).join('');
+
+  const generator = currentLayout === 'list' ? generateProjectRow : generateProjectCard;
+  const html = projects.map((project, index) => generator(project, index)).join('');
+
+  container.className = currentLayout === 'list' ? 'klist' : 'cards kgrid';
+  container.setAttribute('aria-label', 'Project list');
   updateHTML(container, html);
-  
-  // Update project count
-  const countElement = getElementById('projectCount');
-  if (countElement) {
-    updateTextContent(countElement, `(${projects.length} total)`);
+}
+
+function initCardClicks(container) {
+  container.addEventListener('click', (e) => {
+    if (e.target.closest('a, button')) return;
+    const card = e.target.closest('.kpc');
+    if (!card) return;
+    const link = card.querySelector('.kpc__titletxt');
+    if (link) link.click();
+  });
+}
+
+/**
+ * Wire up the card/list layout toggle buttons
+ * @param {Object[]} projects - Array of project objects
+ * @param {HTMLElement} container - Container element
+ */
+function initLayoutToggle(projects, container) {
+  const cardsBtn = getElementById('layoutCards');
+  const listBtn = getElementById('layoutList');
+  if (!cardsBtn || !listBtn) return;
+
+  function setLayout(layout) {
+    currentLayout = layout;
+    cardsBtn.classList.toggle('klayout__btn--active', layout === 'cards');
+    listBtn.classList.toggle('klayout__btn--active', layout === 'list');
+    renderProjects(projects, container);
+    setupFilters(projects);
   }
+
+  cardsBtn.addEventListener('click', () => setLayout('cards'));
+  listBtn.addEventListener('click', () => setLayout('list'));
 }
 
 /**
@@ -113,17 +145,16 @@ function setupFilters(projects) {
     types: getUniqueTypes(projects)
   };
   
-  const filtersTitle = querySelector('.filters-title');
-  
+  const countElement = getElementById('projectCount');
+
   // Initialize filters with callback
   initializeFilters(elements, cards, data, (visibleCount, totalCount) => {
-    const countElement = querySelector('.filters-count', filtersTitle);
     updateFilterCount(countElement, visibleCount, totalCount);
   });
-  
+
   // Update initial count
-  if (filtersTitle) {
-    updateHTML(filtersTitle, `🔍 Filter Projects <span class="filters-count" id="projectCount">(${cards.length} total)</span>`);
+  if (countElement) {
+    updateTextContent(countElement, `${cards.length} projects`);
   }
 }
 
@@ -174,6 +205,8 @@ async function initHomePage() {
       console.log(`Rendering ${data.projects.length} projects`);
       renderProjects(data.projects, listView);
       setupFilters(data.projects);
+      initLayoutToggle(data.projects, listView);
+      initCardClicks(listView);
       updateHeroStats(data.projects);
     } else {
       console.warn('No projects found in data');
