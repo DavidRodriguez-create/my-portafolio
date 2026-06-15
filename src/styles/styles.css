@@ -875,9 +875,11 @@ code, kbd, pre, samp { font-family: var(--font-mono); }
 .kpnav__btn:hover .kpnav__title { color: var(--accent-text); }
 .kpnav__btn:hover svg { color: var(--accent-text); }
 .kpnav__btn svg { color: var(--text-faint); flex-shrink: 0; transition: color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
-.kpnav__prev:hover svg { transform: translateX(-3px); }
-.kpnav__next:hover svg { transform: translateX(3px); }
-.kpnav__title { font-family: var(--font-mono); font-weight: 500; font-size: var(--fs-xs); color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color var(--dur-fast) var(--ease-out); }
+.kpnav__prev:hover > svg { transform: translateX(-3px); }
+.kpnav__next:hover > svg { transform: translateX(3px); }
+.kpnav__title { display: inline-flex; align-items: center; gap: var(--space-1); font-family: var(--font-mono); font-weight: 500; font-size: var(--fs-xs); color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color var(--dur-fast) var(--ease-out); }
+.kpnav__icon { display: inline-flex; flex-shrink: 0; }
+.kpnav__icon svg { width: 16px; height: 16px; color: var(--text-faint); }
 
 @media (max-width: 1024px) {
   .kgal__item { flex: 0 0 calc(50% - var(--space-2)); }

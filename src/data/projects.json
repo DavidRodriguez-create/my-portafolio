@@ -3,7 +3,6 @@
     {
       "id": "impostor",
       "title": "Impostor Game",
-      "icon": "🎭",
       "year": 2026,
       "status": "live",
       "type": "game",
@@ -64,7 +63,6 @@
     {
       "id": "jobhub",
       "title": "JobHub",
-      "icon": "💼",
       "year": 2026,
       "status": "building",
       "type": "fullstack",
@@ -119,7 +117,6 @@
     {
       "id": "pay-and-go",
       "title": "Pay & Go",
-      "icon": "💳",
       "year": 2025,
       "status": "complete",
       "type": "backend",

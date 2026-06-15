@@ -233,12 +233,12 @@ function generateProjectNav(prev, next, variant = 'bottom') {
       ${prev ? `
         <a href="${BASE_PATH}/${prev.url}" class="kpnav__btn kpnav__prev" aria-label="Previous project: ${prev.title}">
           ${ICONS.arrowLeft}
-          <span class="kpnav__title">${prev.icon ? `${prev.icon} ` : ''}${prev.title}</span>
+          <span class="kpnav__title"><span class="kpnav__icon" aria-hidden="true">${getTypeIcon(prev.type)}</span>${prev.title}</span>
         </a>
       ` : '<span></span>'}
       ${next ? `
         <a href="${BASE_PATH}/${next.url}" class="kpnav__btn kpnav__next" aria-label="Next project: ${next.title}">
-          <span class="kpnav__title">${next.icon ? `${next.icon} ` : ''}${next.title}</span>
+          <span class="kpnav__title"><span class="kpnav__icon" aria-hidden="true">${getTypeIcon(next.type)}</span>${next.title}</span>
           ${ICONS.arrowRight}
         </a>
       ` : '<span></span>'}
@@ -358,7 +358,7 @@ export function generateFooter(config = {}) {
 export function generateLoadingState() {
   return `
     <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+      <div style="margin-bottom: 1rem;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
       <p>Loading projects...</p>
     </div>
   `;
